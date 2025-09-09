@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  etcd:
+    build:
+      context: ./services/etcd
+      dockerfile: Dockerfile
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ENABLE_V2=false
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+    ports:
+      - "2379:2379"
+    healthcheck:
+      test: [ "CMD", "/opt/bitnami/etcd/bin/etcdctl", "endpoint", "health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  opa:
+    build:
+      context: ./services/opa
+      dockerfile: Dockerfile
+    ports:
+      - "8181:8181"
+      - "8282:8282"
+
+  cms:
+    build:
+      context: ./services/cms
+      dockerfile: Dockerfile
+    environment:
+      - ETCD_HOST=etcd
+      - ETCD_PORT=2379
+    depends_on:
+      etcd:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+networks:
+  default:
+    name: cms-net

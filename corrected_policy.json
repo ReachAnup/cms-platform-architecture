@@ -1,0 +1,4 @@
+{
+    "rego": "package demo\n\ndefault allow = false\n\n# Allow admins to do anything\nallow if {\n    input.user.role == \"admin\"\n}\n\n# Allow users to access their own resources\nallow if {\n    input.user.role == \"user\"\n    input.user.id == input.resource.owner\n}",
+    "data": null
+}

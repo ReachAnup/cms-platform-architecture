@@ -1,0 +1,17 @@
+services:
+  cms:
+    url: http://cms:8080
+
+bundles:
+  demo:
+    service: cms
+    resource: "bundles/demo"
+    polling:
+      min_delay_seconds: 15
+      max_delay_seconds: 20
+
+decision_logs:
+  console: true
+
+status:
+  console: true
